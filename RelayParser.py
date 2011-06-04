@@ -32,11 +32,16 @@ class RelayParser:
 		bandwidth_end = line.find("</tt><br><tt>p ")
 		bandwidth = line[bandwidth_start:bandwidth_end]
 		print "Bandwidth " + bandwidth
-		break;
+		return bandwidth
+	return 0
     def main(self):
         fingerprints = self.parse_file()
+	totalbandwidth = 0
 	for fingerprint in fingerprints:
-	    self.lookup_fingerprint(fingerprint)
+		bandwidth = self.lookup_fingerprint(fingerprint) 
+		totalbandwidth = totalbandwidth + int(bandwidth)
+	print totalbandwidth
+	
 
 if __name__ == "__main__":
     x = RelayParser()
