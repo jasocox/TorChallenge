@@ -13,8 +13,8 @@ class RelayParser:
         # Perform an HTTP relay search with the fingerprint and scrape the page
 	relay_search_url = "https://metrics.torproject.org/relay-search.html?search=" + fingerprint
 	relay_search_page = urllib2.urlopen(relay_search_url).read().split("\n")
-	for line in relay_search_page:
-	    # Look for the first instance of valid-after, since that will be the most recent metric
+	for line in relay_search_page:   
+	# Look for the first instance of valid-after, since that will be the most recent metric
 	    if line.find("<tt>valid-after") != -1:
 	        # Parse out the date which is enclosed by an <a> tag
 	        date_start = line.find("\"_blank\">") + 9
@@ -23,7 +23,7 @@ class RelayParser:
 		parsed_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
                 # Make sure this last metric is within 5 hours of now
 		if (time.mktime(parsed_date.timetuple()) + 5 * 60 * 60 > time.mktime(datetime.datetime.now().timetuple())):
-		    print "fresh: " + fingerprint
+		    print "fresh: " + fingerprint.strip()
 		else:
 		    print "old: " + fingerprint
 		    return 0
@@ -32,7 +32,7 @@ class RelayParser:
 		bandwidth_start = line.find("w Bandwidth=") + 12
 		bandwidth_end = line.find("</tt><br><tt>p ")
 		bandwidth = line[bandwidth_start:bandwidth_end]
-		print "Bandwidth " + bandwidth
+		print "Bandwidth " + bandwidth + "\n"
 		return bandwidth
 	return 0
     def main(self):
