@@ -43,7 +43,7 @@ class RelayParser:
         for fingerprint in fingerprints:
             self.lookup_fingerprint(fingerprint)
             bandwidth = self.lookup_fingerprint(fingerprint) 
-            relay = Relay(fingerprint.strip())
+            relay = Relay(fingerprint.strip(), bandwidth)
             totalbandwidth = totalbandwidth + int(bandwidth)
         print totalbandwidth
 
