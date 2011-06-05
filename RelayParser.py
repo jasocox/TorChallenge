@@ -1,4 +1,3 @@
-#import models.py
 import urllib2, datetime, time
 from models import *
 
@@ -17,16 +16,25 @@ class RelayParser:
         for line in relay_search_page:
             relay = Relay(line.strip())
             print relay.get_fingerprint()
+            # Look for the first instance of valid-after, since that will be the most recent metric
             if line.find("<tt>valid-after") != -1:
+                # Parse out the date which is enclosed by an <a> tag
                 date_start = line.find("\"_blank\">") + 9
                 date_end = line.find("</a>")
                 date = line[date_start:date_end]
                 parsed_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-                if (time.mktime(parsed_date.timetuple()) + 24 * 60 * 60 > time.mktime(datetime.datetime.now().timetuple())):
+                # Make sure this last metric is within 5 hours of now
+                if (time.mktime(parsed_date.timetuple()) + 5 * 60 * 60 > time.mktime(datetime.datetime.now().timetuple())):
                     print "fresh: " + fingerprint
                 else:
                     print "old: " + fingerprint
-                break
+            elif line.find("w Bandwidth=") != -1:
+                # Parse out the bandwidth after the Bandwidth=
+                bandwidth_start = line.find("w Bandwidth=") + 12
+                bandwidth_end = line.find("</tt><br><tt>p ")
+                bandwidth = line[bandwidth_start:bandwidth_end]
+                print "Bandwidth " + bandwidth
+                break;
 
     def main(self):
         fingerprints = self.parse_file()
