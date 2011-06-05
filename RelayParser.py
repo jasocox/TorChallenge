@@ -1,5 +1,6 @@
 #import models.py
 import urllib2, datetime, time
+import sys
 
 class RelayParser:
 
@@ -9,10 +10,19 @@ class RelayParser:
         f.close()
 	return output
 
-    def lookup_fingerprint(self, fingerprint):
+    def lookup_fingerprint(self, fingerprint, search_date = "" ):
         # Perform an HTTP relay search with the fingerprint and scrape the page
-	relay_search_url = "https://metrics.torproject.org/relay-search.html?search=" + fingerprint
-	relay_search_page = urllib2.urlopen(relay_search_url).read().split("\n")
+	# Check to see whether a search_date is specified
+	relay_search_page = ""
+	if (len(search_date) > 0):
+	    relay_search_url = "https://metrics.torproject.org/relay-search.html?search=" + fingerprint +  "+" + search_date
+	    print "Date: " + search_date
+	    relay_search_page = urllib2.urlopen(relay_search_url).read().split("\n")
+	else: 
+	    relay_search_url = "https://metrics.torproject.org/relay-search.html?search=" + fingerprint
+	    print "No date"
+            relay_search_page = urllib2.urlopen(relay_search_url).read().split("\n")
+
 	for line in relay_search_page:   
 	# Look for the first instance of valid-after, since that will be the most recent metric
 	    if line.find("<tt>valid-after") != -1:
@@ -37,13 +47,20 @@ class RelayParser:
 	return 0
     def main(self):
         fingerprints = self.parse_file()
+	#Get the specified search date from the command line
+
+	if (len(sys.argv) > 0): 
+	    search_date = sys.argv[1]
+	else:
+	    search_date = ""
+	
 	totalbandwidth = 0
 	for fingerprint in fingerprints:
-		bandwidth = self.lookup_fingerprint(fingerprint) 
+		bandwidth = self.lookup_fingerprint(fingerprint, search_date) 
 		totalbandwidth = totalbandwidth + int(bandwidth)
 	print totalbandwidth
 	
-
+	        
 if __name__ == "__main__":
     x = RelayParser()
     x.main()
