@@ -1,7 +1,8 @@
 class Relay:
 
-    def __init__(self, data):
-        self.fingerprint = data
+    def __init__(self, fingerprint, bandwidth):
+        self.fingerprint = fingerprint
+        self.bandwidth = bandwidth
         #username = models.CharField(max_length=255)
         #is_anonymous = models.BooleanField()
 
