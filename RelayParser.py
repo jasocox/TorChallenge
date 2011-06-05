@@ -26,6 +26,7 @@ class RelayParser:
 		    print "fresh: " + fingerprint
 		else:
 		    print "old: " + fingerprint
+		    return 0
 	    elif line.find("w Bandwidth=") != -1:
 	        # Parse out the bandwidth after the Bandwidth=
 		bandwidth_start = line.find("w Bandwidth=") + 12
